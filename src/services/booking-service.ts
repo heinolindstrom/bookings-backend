@@ -1,16 +1,10 @@
 import bookingRepo from '@repos/booking-repo';
-import { IBooking } from '@models/booking-model';
+import { IBookingResult } from '@models/booking-model';
 
-/**
- * Get all users.
- *
- * @returns
- */
-function getAll(offset: number): Promise<IBooking[]> {
-  return bookingRepo.getAll(offset);
+function getForUser(offset: number, email: string): Promise<IBookingResult> {
+  return bookingRepo.getForUser(offset, email);
 }
 
-// Export default
 export default {
-  getAll,
+  getForUser,
 } as const;

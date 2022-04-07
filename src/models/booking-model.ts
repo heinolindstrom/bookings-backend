@@ -10,3 +10,8 @@ export interface IBooking {
   venue_name: string;
   people: IParticipant[];
 }
+
+export interface IBookingResult {
+  bookings: IBooking[];
+  count: number;
+}

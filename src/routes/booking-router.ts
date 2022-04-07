@@ -10,15 +10,20 @@ const { OK } = StatusCodes;
 
 // Paths
 export const p = {
-  get: '/all/:offset?',
+  getForUser: '/:email/:offset?',
 } as const;
 
 /**
  * Get Bookings.
  */
-router.get(p.get, async (req: Request, res: Response) => {
+router.get(p.getForUser, async (req: Request, res: Response) => {
   const offset = req.params.offset ? parseInt(req.params.offset) : 0;
-  const bookings = await bookingService.getAll(offset);
+  const email = req.params.email ? req.params.email : undefined;
+  if (!email) {
+    throw 'Email missing';
+  }
+
+  const bookings = await bookingService.getForUser(offset, email);
   return res.status(OK).json(bookings);
 });
 

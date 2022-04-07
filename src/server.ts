@@ -1,6 +1,6 @@
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
-import path from 'path';
+import cors from 'cors';
 import helmet from 'helmet';
 
 import express, { NextFunction, Request, Response } from 'express';
@@ -13,6 +13,7 @@ import { CustomError } from '@shared/errors';
 
 // Constants
 const app = express();
+app.use(cors());
 
 /***********************************************************************************
  *                                  Middlewares

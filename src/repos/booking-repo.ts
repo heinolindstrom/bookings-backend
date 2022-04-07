@@ -1,10 +1,11 @@
 import { pool } from './pool';
-import { IBooking } from '@models/booking-model';
+import { IBooking, IBookingResult } from '@models/booking-model';
 
-const sql = `
+const bookingsForUserSql = `
 SELECT booking.id,
+       admin.email,
        booking.created_at,
-       venue.name,
+       venue.name as venue_name,
        event.name,
        event.price,
        venue.country,
@@ -18,26 +19,47 @@ LEFT OUTER JOIN participant
              ON participant.event_id = booking.event_id
 LEFT OUTER JOIN public.user AS u
              ON participant.user_id = u.id
-WHERE  booking.id > $1
+LEFT OUTER JOIN public.user AS admin
+             ON booking.admin_id = admin.id
+WHERE  admin.email = $1
+       AND booking.id > $2
 GROUP  BY booking.id,
+          admin.email,
           booking.created_at,
           venue.name,
           event.name,
           event.price,
           venue.country
-LIMIT  $2`;
+LIMIT  $3`;
+
+const countSql = `
+SELECT COUNT(*)
+FROM   public.booking
+LEFT OUTER JOIN public.user AS admin
+             ON booking.admin_id = admin.id
+WHERE admin.email = $1
+GROUP BY admin_id;`;
 
 /**
- * Get all users.
+ * Get all Bookings for User.
  *
- * @returns
+ * @returns Promise<IBookingResult>
  */
-async function getAll(offset: number): Promise<IBooking[]> {
-  const db = await pool.query(sql, [offset, 10]);
-  return db['rows'] as IBooking[];
+async function getForUser(
+  offset: number,
+  email: string,
+): Promise<IBookingResult> {
+  const bookings = await pool.query(bookingsForUserSql, [email, offset, 10]);
+  const counts = await pool.query(countSql, [email]);
+  const count = counts['rows'].map((field) => field.count as number)[0] || 0;
+
+  return {
+    bookings: bookings['rows'] as IBooking[],
+    count,
+  } as IBookingResult;
 }
 
 // Export default
 export default {
-  getAll,
+  getForUser,
 } as const;
