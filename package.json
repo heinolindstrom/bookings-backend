@@ -27,6 +27,13 @@
     "@server": "dist/server",
     "@routes": "dist/routes"
   },
+  "jest": {
+    "moduleNameMapper": {
+      "@services/(.*)": "<rootDir>/src/services/$1",
+      "@repos/(.*)": "<rootDir>/src/repos/$1",
+      "@shared/(.*)": "<rootDir>/src/shared/$1"
+    }
+  },
   "eslintConfig": {
     "parser": "@typescript-eslint/parser",
     "plugins": [
@@ -47,7 +54,6 @@
           "code": 100
         }
       ],
-      "no-console": 1,
       "no-extra-boolean-cast": 0,
       "@typescript-eslint/restrict-plus-operands": 0,
       "@typescript-eslint/explicit-module-boundary-types": 0,
@@ -59,7 +65,9 @@
   },
   "eslintIgnore": [
     "src/public/",
-    "build.ts"
+    "build.ts",
+    "migrations/",
+    ".env"
   ],
   "dependencies": {
     "command-line-args": "^5.2.1",
